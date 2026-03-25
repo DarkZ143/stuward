@@ -2,10 +2,14 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Menu, X, Search, ChevronDown } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import Stuimage from "@/public/stuward.png";
 import { useLoader } from "@/context/LoaderContext";
+import { useAuth } from "@/context/AuthContext";
+import { useUserData } from "@/hooks/useUserData";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 const navLinks = [
     { label: "Home", path: "/" },
     { label: "About", path: "/about" },
@@ -20,11 +24,19 @@ const gameLinks = [
 ];
 
 export default function Navbar() {
+    const pathname = usePathname();
+    const { user } = useAuth();
+    const userData = useUserData();
     const { setLoading } = useLoader();
 
     const navigate = (path: string) => {
         setLoading(true);
         router.push(path);
+    };
+    const getAvatar = (gender?: string) => {
+        if (gender === "male") return "👨";
+        if (gender === "female") return "👩";
+        return "🦅";
     };
 
     const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -59,6 +71,11 @@ export default function Navbar() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    if (pathname === "/login" || pathname === "/signup") {
+        return null;
+    }
+
+
     return (
         <>
             {/* NAVBAR */}
@@ -74,27 +91,65 @@ export default function Navbar() {
                         </button>
 
                         {/* CENTER: LOGO */}
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between cursor-pointer" onClick={()=> router.push('/')}>
                             <Image src={Stuimage} alt="Logo" width={32} height={32} className="mr-2" />
                             <h1 className="text-lg font-bold bg-linear-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
                                 Stuward
                             </h1>
                         </div>
 
-                        {/* RIGHT: PROFILE */}
-                        <button
-                            onClick={() => router.push("/profile")}
-                            className="w-9 h-9 rounded-full bg-linear-to-r from-blue-500 to-cyan-400 flex items-center justify-center"
-                        >
-                            <span className="text-sm font-bold">R</span>
-                        </button>
+                        {/* RIGHT: Profile */}
+                        {user ? (
+                            <div className="flex items-center gap-3">
+
+                                {/* Profile */}
+                                <button
+                                    onClick={() => router.push("/Profile")}
+                                    className="w-9 h-9 rounded-full bg-linear-to-r from-blue-500 to-cyan-400 flex items-center justify-center"
+                                >
+                                    <span className="text-lg">
+                                        {getAvatar(userData?.gender)}
+                                    </span>
+                                </button>
+
+                                {/* LOGOUT */}
+                                <button
+                                    onClick={async () => {
+                                        await signOut(auth);
+                                        router.push("/login");
+                                    }}
+                                    className="text-sm text-gray-300 hover:text-red-400"
+                                >
+                                    Logout
+                                </button>
+
+                            </div>
+                        ) : (
+                            <div className="flex gap-3">
+
+                                <button
+                                    onClick={() => router.push("/login")}
+                                    className="text-sm hover:text-cyan-400"
+                                >
+                                    Login
+                                </button>
+
+                                <button
+                                    onClick={() => router.push("/signup")}
+                                    className="bg-linear-to-r from-blue-500 to-cyan-400 px-3 py-1 rounded-md text-sm"
+                                >
+                                    Signup
+                                </button>
+
+                            </div>
+                        )}
                     </div>
 
                     {/* DESKTOP NAV */}
                     <div className="hidden md:flex w-full items-center justify-between">
 
                         {/* LEFT */}
-                        <div className="flex items-center justify-between" >
+                        <div className="flex items-center justify-between cursor-pointer" onClick={()=> router.push('/')} >
                             <Image src={Stuimage} alt="Logo" width={32} height={32} className="mr-2" />
                             <h1 className="text-xl font-bold bg-linear-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
                                 Stuward
@@ -197,10 +252,12 @@ export default function Navbar() {
                             </div>
 
                             <button
-                                onClick={() => router.push("/profile")}
+                                onClick={() => router.push("/Profile")}
                                 className="w-9 h-9 rounded-full bg-linear-to-r from-blue-500 to-cyan-400 flex items-center justify-center"
                             >
-                                <span className="text-sm font-bold">R</span>
+                                <span className="text-lg">
+                                    {getAvatar(userData?.gender)}
+                                </span>
                             </button>
                         </div>
                     </div>

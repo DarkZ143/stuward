@@ -2,13 +2,16 @@
 
 import Image from "next/image";
 import Stuimage from "@/public/stuward.png";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useLoader } from "@/context/LoaderContext";
 import { useState, useEffect } from "react";
+
 
 export default function Footer() {
     const router = useRouter();
     const { setLoading } = useLoader();
+
+
 
     const [email, setEmail] = useState("");
     const [loadingSub, setLoadingSub] = useState(false);
@@ -20,6 +23,19 @@ export default function Footer() {
         router.push(path);
     };
 
+
+    // 🔥 AUTO CLOSE POPUP
+    useEffect(() => {
+        if (status) {
+            const timer = setTimeout(() => setStatus(""), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [status]);
+    const pathname = usePathname();
+
+    if (pathname === "/login" || pathname === "/signup") {
+        return null;
+    }
     const handleSubscribe = async () => {
         if (!email) {
             setStatus("error");
@@ -50,13 +66,7 @@ export default function Footer() {
         }
     };
 
-    // 🔥 AUTO CLOSE POPUP
-    useEffect(() => {
-        if (status) {
-            const timer = setTimeout(() => setStatus(""), 3000);
-            return () => clearTimeout(timer);
-        }
-    }, [status]);
+
 
     return (
         <>
@@ -67,8 +77,8 @@ export default function Footer() {
 
                         <h2
                             className={`text-lg font-semibold mb-2 ${status === "success"
-                                    ? "text-green-400"
-                                    : "text-red-400"
+                                ? "text-green-400"
+                                : "text-red-400"
                                 }`}
                         >
                             {status === "success" ? "Success 🎉" : "Error ❌"}
@@ -122,10 +132,10 @@ export default function Footer() {
                         <div>
                             <h3 className="font-semibold mb-3 text-cyan-400">Games</h3>
                             <ul className="space-y-2 text-sm text-gray-400">
-                                <li className="cursor-pointer hover:text-white" onClick={() => navigate("/games/atlas")}>Atlas</li>
-                                <li className="cursor-pointer hover:text-white" onClick={() => navigate("/games/aptitude")}>Aptitude</li>
-                                <li className="cursor-pointer hover:text-white" onClick={() => navigate("/games/coding")}>Coding</li>
-                                <li className="cursor-pointer hover:text-white" onClick={() => navigate("/games/reasoning")}>Reasoning</li>
+                                <li className="cursor-pointer hover:text-white" onClick={() => navigate("/AtlasGames")}>Atlas</li>
+                                <li className="cursor-pointer hover:text-white" onClick={() => navigate("/AptitudeGames")}>Aptitude</li>
+                                <li className="cursor-pointer hover:text-white" onClick={() => navigate("/CodingGames")}>Coding</li>
+                                <li className="cursor-pointer hover:text-white" onClick={() => navigate("/ReasoningGames")}>Reasoning</li>
                             </ul>
                         </div>
 
