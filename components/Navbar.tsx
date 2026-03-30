@@ -12,8 +12,8 @@ import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 const navLinks = [
     { label: "Home", path: "/" },
-    { label: "About", path: "/about" },
-    { label: "Support", path: "/support" },
+    { label: "About", path: "/About" },
+    { label: "Support", path: "/Support" },
 ];
 
 const gameLinks = [

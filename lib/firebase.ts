@@ -1,23 +1,30 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
-
+// 1. Map config to environment variables securely
 const firebaseConfig = {
-    apiKey: "AIzaSyA6g2UB9_MTDmNdNWYXi1ZAmH46vy9STLA",
-    authDomain: "stuward-web-50316.firebaseapp.com",
-    projectId: "stuward-web-50316",
-    storageBucket: "stuward-web-50316.firebasestorage.app",
-    messagingSenderId: "179306629266",
-    appId: "1:179306629266:web:432c8c018a9d0ce6e97e4b",
-    measurementId: "G-0LX9T3Z0WS"
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-const app = initializeApp(firebaseConfig);
+// 2. Dev-friendly safety check
+if (typeof window !== "undefined" && !firebaseConfig.apiKey) {
+    console.warn("⚠️ Firebase config is missing. Check your .env.local file.");
+}
 
+// 3. Singleton Initialization (Prevents Next.js hot-reload crashes)
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+
+// 4. Export services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 
-export default app
+export default app;
