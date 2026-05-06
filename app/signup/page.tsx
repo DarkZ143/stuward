@@ -8,7 +8,7 @@ import {
     GoogleAuthProvider,
     signInWithPopup,
 } from "firebase/auth";
-import { auth, db } from "@/lib/firebase";
+import { auth, db } from "../../lib/firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useLoader } from "@/context/LoaderContext";
@@ -238,7 +238,7 @@ export default function Signup() {
                     onClick={handleGoogleSignup}
                     className="w-full flex items-center justify-center gap-2 border border-white/20 py-2 rounded-md hover:bg-white/10 transition"
                 >
-                    <Image src="/google.png" alt="Google" width={24} height={24}/> Continue with Google
+                    <Image src="/google.png" alt="Google" width={24} height={24} /> Continue with Google
                 </button>
 
                 {/* LOGIN REDIRECT */}
